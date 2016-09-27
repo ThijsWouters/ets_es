@@ -17,6 +17,18 @@ defmodule Component do
     |> Enum.at(0)
   end
 
+  def data(components) when is_list(components) do
+    components
+    |> Enum.map(fn component ->
+      :ets.lookup(:entity_components, component)
+    end)
+    |> List.flatten
+    |> Enum.reduce(%{}, fn {component, entity, data}, acc ->
+      map = Map.get(acc, entity, %{})
+      Map.put(acc, entity, Map.put(map, component, Data.get(component, data)))
+    end)
+  end
+
   def data(component) do
     :ets.lookup(:entity_components, component)
     |> Enum.map(fn {_, _, data} ->
