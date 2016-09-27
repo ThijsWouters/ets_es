@@ -12,9 +12,20 @@ defmodule EtsEs do
       # worker(EtsEs.Worker, [arg1, arg2, arg3]),
     ]
 
+    :ets.new(:component, [:set, :public, :named_table])
+    :ets.new(:entity, [:set, :public, :named_table])
+    :ets.new(:entity_components, [:bag, :public, :named_table])
+
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: EtsEs.Supervisor]
     Supervisor.start_link(children, opts)
+  end
+
+  def run(0), do: nil
+  def run(times) do
+    DrawSystem.process
+    TimeSystem.process
+    run(times - 1)
   end
 end
